@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+      <meta charset = "UTF-8">
+      <title>Platformer - APCSP | Brendan Chay</title>
+      <link rel = "stylesheet" type = "text/css" href = "./index.css">
+    </head>
+    <body>
+        <div id = "buttonDiv">
+          <button id = "start">Start!</button>
+          <button id = "playLevel">Play a Level!</button>
+          <button id = "createLevel">Create a Level!</button>
+        </div>
+        <div id = "instructions">
+          <br>
+          <h1>Platformer.js</h1>
+          Welcome to Platformer.js! To begin, please click one of the above buttons. You may play a randomly generated level, a pre-created level, or create one of your own. Use the arrow keys to move the character left and right. When you want to jump, click either the up arrow or the space bar. The A and S keys can be used to pan the screen and see further in either direction. Avoid the lava platforms and moving red rectangles. Advance as far as you can, collecting as many coins as you can, before you fall to your death.
+          <br>
+          <br>
+          For level creation, a series of tile options exists in the upper right corner. Once one of these is selected, clicking once will set the position of the upper left corner of the desired element. Clicking again will determine the location of the lower right corner. In order, the choices are: Select, Coin, Elliptical Enemy, Rectangular Enemy, Cloud, Lava, Stone, and Grass. If you want to resize, reposition, or delete an element, chose the select tool (mouse pointer), and select the desired element. Drag the handles to resize the element, or drag from the center to reposition it. If you have not already selected an element, you will not be able to change its properties. For more fine-tuned control, as well as the ability to alter an enemy's path, left click on the selected element. This will bring up a menu with which you can select the desired properties. The choices for platform type are: soil, stone, and lava. The choices for an enemy movementPattern are rectangular and elliptical.
+          <br>
+          <br>
+          When you have finished designing your level, hit s to save it. You should see an alert message confirming that the level has been copied to you clipboard. Then, you must paste it into the index.js file where indicated. You can find "paste custom code here" to navigate to the correct location.
+          <br>
+          <br>
+          Please ensure that your browser is compliant with the newest technical specifications and standards. This program uses the newest version of JavaScript, called ECMAScript 6 Harmony, and your browser must therefore support ES6 if you want to play the game. If your browser does not, please upgrade to the newest version.
+        </div>
+        <canvas id = "canvas">Your browser does not support HTML 5 Canvas. Please upgrade to a modern browser.</canvas>
+        <br><br>
+        <script src = "./index.js"></script>
+    </body>
+</html>
