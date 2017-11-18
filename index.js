@@ -304,7 +304,7 @@ Canvas.coin = new Image();
 Canvas.coin.src = "./img/coin.png"; //Taken from https://opengameart.org/content/coin-icon
 
 Canvas.lava = new Image();
-Canvas.lava.src = "./img/lava-1.png"; //Image src switches via setTimeout, Taken from http://www.clipartbest.com/cliparts/9i4/6B7/9i46B7qRT.png
+Canvas.lava.src = "./img/lava.png"; //Taken from http://www.clipartbest.com/cliparts/9i4/6B7/9i46B7qRT.png
 
 Canvas.soilCircle = new Image();
 Canvas.soilCircle.src = "./img/soil-circle.png";
@@ -314,9 +314,6 @@ Canvas.stoneCircle.src = "./img/stone-circle.png";
 
 Canvas.lavaCircle = new Image();
 Canvas.lavaCircle.src = "./img/lava-circle.png";
-Canvas.currentLavaImage = 7; //Starts at 7 for modulus to work properly
-Canvas.lavaCount = 0;
-
 
 Canvas.mouse = new Image();
 Canvas.mouse.src = "./img/mouse.png";
@@ -505,13 +502,6 @@ class Game {
 
     interval = requestAnimationFrame(this.tick.bind(this));
     Game.checkGameOver();
-
-    //Change lava texture to add animation
-    if(Canvas.lavaCount % 2 === 0) { //Slows down transition to once every two loops
-      Canvas.lava.src = "./img/lava-" + (Canvas.currentLavaImage % 7 + 1) + ".png"; //Lava images created with www.clipartbest.com/cliparts/9i4/6B7/9i46B7qRT.png
-      Canvas.currentLavaImage++;
-    }
-    Canvas.lavaCount++;
   }
   
   static checkGameOver() {
@@ -815,8 +805,6 @@ class LevelCreator {
     this.selectedElement; //Used with mouse TileChoice
     this.handles = [];
     this.selectedHandle;
-    Canvas.lava = new Image(); //Reset value if it has been modified during gameplay
-    Canvas.lava.src = "./img/lava-1.png"; //Lava image used with TileChoice
   }
 
   init() {
