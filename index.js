@@ -240,41 +240,6 @@ class Utility {
   static removeKey(key) {
     this.keyMap.splice(this.keyMap.indexOf(key), 1);
   }
-
-  //Taken from http://stackoverflow.com/a/30810322
-  static copyTextToClipboard(text) {
-    var textArea = document.createElement("textarea");
-
-    textArea.style.position = 'fixed';
-    textArea.style.top = 0;
-    textArea.style.left = 0;
-
-    textArea.style.width = '2em';
-    textArea.style.height = '2em';
-
-    textArea.style.padding = 0;
-
-    textArea.style.border = 'none';
-    textArea.style.outline = 'none';
-    textArea.style.boxShadow = 'none';
-
-    textArea.style.background = 'transparent';
-
-    textArea.value = text;
-
-    document.body.appendChild(textArea);
-
-    textArea.select();
-
-    try {
-      var successful = document.execCommand('copy');
-
-      alert(successful ? "You have succesfully created your new level. \n Please paste it into the code where designated." : "An error occurred when attempting to build your level. Please try again later.");
-    } catch (err) {
-      alert("An error occurred when attempting to build your level. Please try again later.");
-    }
-    document.body.removeChild(textArea);
-  }
 }
 
 Utility.keyMap = [];
@@ -382,12 +347,12 @@ class Game {
 
     if(document.getElementById("customLevels")) document.body.removeChild(document.getElementById("customLevels"));
 
-    if(this.customLevel === true) { //User wants to play custom level, show level select screen
+    if(this.customLevel) { //User wants to play custom level, show level select screen
       customLevels = [];
 
-      /************************************************************** PASTE CUSTOM CODE HERE **************************************************************/
-customLevels.push([[new Platform(80,390,300,30,"soil"),new Platform(412,429,349,87,"soil"),new Platform(1019,442,399,82,"soil")], [], [new Enemy(763,150,50,50,255,462,"rectangular"),new Enemy(400,133,50,50,0,459,"rectangular")], [],[new Player(110,370,20,20)]]);
-      /**************************************************************** END OF CUSTOM CODE ****************************************************************/
+      for(var key in localStorage) { //Load all custom levels
+        eval(localStorage.getItem(key)); //Use eval, no sensitive data
+      }
 
       let levelDiv = document.createElement("div");
       levelDiv.id = "customLevels";
@@ -397,17 +362,31 @@ customLevels.push([[new Platform(80,390,300,30,"soil"),new Platform(412,429,349,
         let level = document.createElement("div");
         level.className = "level";
         level.innerHTML = i + 1;
-        document.getElementById("customLevels").appendChild(level);
+
+        let deleteButton = document.createElement("div");
+        deleteButton.className = "deleteButton";
+        deleteButton.id = "deleteButton" + localStorage.key(i).substring(4);
+        deleteButton.innerHTML = "&#10006;"; //X HTML entity
+
+        deleteButton.addEventListener("click", function(event) {
+          event.target.parentNode.parentNode.removeChild(event.target.parentNode); //Remove level option div
+          localStorage.removeItem("item" + event.target.id.substring(12)); //Clear element from localStorage list
+          event.stopPropagation();
+        });
 
         level.addEventListener('click', function(event) {
-          game.customLevel = parseInt(event.target.innerHTML) - 1;
+          game.customLevel = parseInt(event.target.innerHTML.substring(0, event.target.innerHTML.indexOf("<"))) - 1;
           document.body.removeChild(document.getElementById("customLevels"));
           game.init();
+          event.stopPropagation();
         });
+
+        level.appendChild(deleteButton);
+        document.getElementById("customLevels").appendChild(level);
       }
     } else { //Play randomized level, or a selected custom level
       time = Date.now();
-      if(this.customLevel === false) { //Randomized level
+      if(this.customLevel === false) { //Randomized level, must be ===, this.customlevel is integer
         for(let i = 1; i < 2000; i++) {
           let platformType = Math.random();
           if(platformType < .05) platformType = "lava";
@@ -1108,7 +1087,7 @@ class LevelCreator {
       
       for(let key in platforms[i]) {
         if(typeof platforms[i][key] === "number") str += platforms[i][key]  + ",";
-        else str += "\"" + platforms[i][key]  + "\",";
+        else str += "'" + platforms[i][key]  + "',";
       }
       str = str.substring(0, str.length - 1);
       str += "),";
@@ -1120,7 +1099,7 @@ class LevelCreator {
       str += "new Cloud(";
       for(let key in clouds[i]) {
         if(typeof clouds[i][key] === "number") str += clouds[i][key]  + ",";
-        else str += "\"" + clouds[i][key]  + "\","; //Add quotes around strings
+        else str += "'" + clouds[i][key]  + "',"; //Add quotes around strings
       }
       str = str.substring(0, str.length - 1);
       str += "),";
@@ -1138,7 +1117,7 @@ class LevelCreator {
         enemies[i].y = enemies[i].originalY;
         if(["theta", "centerX", "centerY", "originalX", "originalY"].indexOf(key) === -1) { //Ignore properties not needed for the constructor
           if(typeof enemies[i][key] === "number") str += enemies[i][key]  + ",";
-          else str += "\"" + enemies[i][key]  + "\","; //Add quotes around strings
+          else str += "'" + enemies[i][key]  + "',"; //Add quotes around strings
           
         }
       }
@@ -1195,7 +1174,8 @@ window.addEventListener("keydown", (event) => {
 
   //"S" key pressed
   if(Utility.keyPressed(83) && levelCreator) {
-    Utility.copyTextToClipboard(levelCreator.getPlatformString());
+    localStorage.setItem("item" + (localStorage.length > 0 ? (+localStorage.key(localStorage.length - 1).substring(4) + 1) : 0), levelCreator.getPlatformString()); //Item key is unimportant, must be unique
+    alert("Your level has been saved.");
     Utility.removeKey(83); //S is not automatically removed because of alert
   }
 });
