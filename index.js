@@ -277,6 +277,10 @@ class Canvas {
     this.ctx.drawImage(Canvas.cloud, x, y, width, height);
   }
 
+  static drawCoin(x, y, width, height) {
+    this.ctx.drawImage(Canvas.coin, x, y, width, height);
+  }
+
   static clear() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.fillStyle = "skyblue";
@@ -295,6 +299,9 @@ Canvas.stone.src = "./img/stone-texture.png"; //Created with http://cpetry.githu
 
 Canvas.cloud = new Image();
 Canvas.cloud.src = "./img/cloud.png"; //Taken from http://www.clipartbest.com/cliparts/9i4/6B7/9i46B7qRT.png
+
+Canvas.coin = new Image();
+Canvas.coin.src = "./img/coin.png"; //Taken from https://opengameart.org/content/coin-icon
 
 Canvas.lava = new Image();
 Canvas.lava.src = "./img/lava-1.png"; //Image src switches via setTimeout, Taken from http://www.clipartbest.com/cliparts/9i4/6B7/9i46B7qRT.png
@@ -347,7 +354,7 @@ class Game {
 
     if(document.getElementById("customLevels")) document.body.removeChild(document.getElementById("customLevels"));
 
-    if(this.customLevel) { //User wants to play custom level, show level select screen
+    if(this.customLevel === true) { //User wants to play custom level, show level select screen, must have === true
       customLevels = [];
 
       for(var key in localStorage) { //Load all custom levels
@@ -405,7 +412,7 @@ class Game {
         }
         
         for(let i = 0; i < 200; i++) {
-          coins[i] = new Coin(Utility.randomNumber(-5000, 100000), Utility.randomNumber(150, canvas.height - 50), 30, 40);
+          coins[i] = new Coin(Utility.randomNumber(-5000, 100000), Utility.randomNumber(150, canvas.height - 50), 50, 50);
         }
         
       } else { //Play custom level - this.customLevel is a number corresponding to the desired level.
@@ -654,8 +661,7 @@ class Coin {
   }
   
   render() {
-    Canvas.ctx.fillStyle = "#d4af37"; //Gold
-    Canvas.ctx.fillRect(this.x - Canvas.canvasX, this.y, this.width, this.height);
+    Canvas.drawCoin(this.x - Canvas.canvasX, this.y, this.width, this.height);
   }
 }
 
@@ -750,6 +756,10 @@ class TileChoice {
         break;
       case "mouse":
         image = Canvas.mouse;
+        break;
+      case "coin":
+        image = Canvas.coin;
+        break;
     }
     
     if(image != undefined) {
@@ -780,12 +790,6 @@ class TileChoice {
       Canvas.ctx.beginPath();
       Canvas.ctx.arc(x + this.radius / 2, y + this.radius / 2, this.radius / 5, 0, 2 * Math.PI);
       Canvas.ctx.stroke();
-    } else if(this.type === "coin") {
-      //Draw coin
-      Canvas.ctx.fillStyle = "#d4af37"; //Gold
-      Canvas.ctx.beginPath();
-      Canvas.ctx.arc(x + this.radius / 2, y + this.radius / 2, this.radius / 2, 0, 2 * Math.PI);
-      Canvas.ctx.fill();
     }
     
     if(this.type === levelCreator.selected) { //Draw border around selected image
@@ -971,7 +975,7 @@ class LevelCreator {
       } else if(this.selected === "cloud") {
         clouds.push(new Cloud(x, y, width, height));
       } else if(this.selected === "coin") {
-        clouds.push(new Coin(x, y, width, height));
+        coins.push(new Coin(x, y, width, height));
       } else if(["rectangularEnemy", "ellipticalEnemy"].indexOf(this.selected) > -1) {
         enemies.push(new Enemy(x, y, 50, 50, width, height, this.selected.substring(0, this.selected.length - 5), x, y)); //Substring removes "enemy", trailing x / y parameters are the actual position - update() changes x and y
       }
@@ -1194,7 +1198,7 @@ window.addEventListener("click", (event) => {
 });
 
 window.addEventListener("mousemove", (event) => {
-  if(levelCreator != null && !document.getElementById("elementMenu")) { //Should be !=, not !==
+  if(levelCreator != null && !document.getElementById("elementMenu")) { //Must be !=, not !==
     levelCreator.setMousePosition(event);
   }
 });
