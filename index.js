@@ -354,8 +354,8 @@ class Game {
     if(this.customLevel === true) { //User wants to play custom level, show level select screen, must have === true
       customLevels = [];
 
-      for(var key in localStorage) { //Load all custom levels
-        eval(localStorage.getItem(key)); //Use eval, no sensitive data
+      for(let i = 0; i < localStorage.length; i++) { //Load all custom levels
+        eval(localStorage.getItem(localStorage.key(i))); //Use eval, no sensitive data
       }
 
       let levelDiv = document.createElement("div");
@@ -938,7 +938,7 @@ class LevelCreator {
         this.selected = this.platformChoices[i].type;
         this.selectedElement = null; //Remove selected element if user has clicked on different tile than mouse
         this.handles = [];
-      return; //Should be return and not break - end method if user has clicked on a TileChoice
+        return; //Should be return and not break - end method if user has clicked on a TileChoice
       }
     }
 
@@ -1144,11 +1144,13 @@ class LevelCreator {
 }
 
 document.getElementById("start").addEventListener("click", function(event) {
+  levelCreator = null;
   game = new Game(false);
   game.init();
 });
 
 document.getElementById("playLevel").addEventListener("click", function(event) {
+    levelCreator = null;
     game = new Game(true);
     game.init();
 });
